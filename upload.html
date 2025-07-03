@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drop Your Secret - Dropboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'handwriting': ['Kalam', 'cursive'],
+                    },
+                    colors: {
+                        'neon-green': '#00ff88',
+                        'neon-blue': '#4ecdc4',
+                        'neon-yellow': '#ffe66d',
+                        'neon-purple': '#a8e6cf',
+                        'neon-orange': '#ff8b94',
+                        'neon-cyan': '#00d4ff',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="font-handwriting bg-gray-900 min-h-screen relative overflow-x-hidden">
+    <div id="particles-js" class="absolute inset-0 z-0"></div>
+
+    <div class="relative z-10">
+        <header class="p-6 border-b border-gray-700">
+            <div class="max-w-4xl mx-auto flex justify-between items-center">
+                <a href="/" class="text-3xl font-bold text-neon-green transform -rotate-2 hover:scale-105 transition-all">
+                    📋 dropboard
+                </a>
+                <div class="flex space-x-4">
+                    <a href="/browse" class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-neon-blue font-medium transform rotate-1 hover:scale-105 transition-all">
+                        👀 Browse Secrets
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-2xl mx-auto px-6 py-12">
+            <div class="text-center mb-12">
+                <h1 class="text-5xl md:text-6xl font-bold mb-4 transform -rotate-1">
+                    <span class="text-neon-green">Drop</span> <span class="text-neon-blue">Your</span> <span class="text-neon-yellow">Secret</span>
+                </h1>
+                <p class="text-xl text-gray-300">
+                    Share what's on your mind. <span class="text-neon-purple font-bold">100% anonymous</span>, no judgment.
+                </p>
+            </div>
+
+            <div class="bg-white/5 backdrop-blur-sm border border-white/20 rounded-3xl p-8 transform rotate-1 shadow-lg">
+                <form class="space-y-6" method="POST" action="/drop">
+                    <div>
+                        <label class="block text-xl font-bold text-neon-green mb-3 transform -rotate-1">
+                            📝 Give it a title
+                        </label>
+                        <input 
+                            type="text" 
+                            name="title"
+                            placeholder="What's this about?"
+                            class="w-full p-4 bg-white/10 backdrop-blur-sm border-2 border-neon-green/30 rounded-2xl text-lg text-white placeholder-gray-400 focus:border-neon-green focus:outline-none transform hover:scale-[1.02] transition-all"
+                            maxlength="100"
+                        >
+                        <p class="text-sm text-gray-400 mt-2 transform rotate-1">Keep it short and sweet (max 100 characters)</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-xl font-bold text-neon-blue mb-3 transform rotate-1">
+                            💭 Tell us more
+                        </label>
+                        <textarea 
+                            name="content"
+                            placeholder="Share your secret, confession, or what's really on your mind..."
+                            rows="8"
+                            class="w-full p-4 bg-white/10 backdrop-blur-sm border-2 border-neon-blue/30 rounded-2xl text-lg text-white placeholder-gray-400 focus:border-neon-blue focus:outline-none transform hover:scale-[1.02] transition-all resize-none"
+                            maxlength="1000"
+                        ></textarea>
+                        <p class="text-sm text-gray-400 mt-2 transform -rotate-1">
+                            <span class="text-neon-purple font-bold">✨ Don't worry:</span> Our filters keep things respectful while protecting your anonymity
+                        </p>
+                    </div>
+                    <div class="bg-neon-yellow/10 border-2 border-neon-yellow/30 rounded-2xl p-6 transform -rotate-1">
+                        <h3 class="text-lg font-bold text-neon-yellow mb-3">🌟 Quick Guidelines</h3>
+                        <ul class="space-y-2 text-gray-300">
+                            <li>• Be respectful to others</li>
+                            <li>• No personal information (yours or others')</li>
+                            <li>• Our filters catch inappropriate content</li>
+                            <li>• Remember: this is a safe space for everyone</li>
+                        </ul>
+                    </div>
+
+                    <input type="hidden" name="country" value="Anonymous">
+
+                    <div class="text-center pt-4">
+                        <button 
+                            type="submit"
+                            class="bg-neon-purple hover:bg-green-400 text-gray-900 font-bold py-4 px-12 rounded-full text-xl transform hover:scale-110 transition-all duration-200 shadow-lg hover:shadow-xl rotate-2"
+                        >
+                            🚀 Drop It Anonymously
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="text-center mt-12">
+                <p class="text-lg text-gray-300 transform rotate-1">
+                    Your secret will be <span class="text-neon-green font-bold">completely anonymous</span>. 
+                    Others can comment and support you, but <span class="text-neon-blue font-bold">nobody will know it's you</span>.
+                </p>
+            </div>
+        </main>
+
+        <footer class="mt-20 p-6 text-center border-t border-gray-700">
+            <p class="text-gray-400 transform rotate-1">
+                Made with <span class="text-neon-green">💜</span> for <span class="text-neon-blue font-bold">teens</span> who need a <span class="text-neon-purple font-bold">safe space</span>
+            </p>
+            <p class="text-gray-400 transform rotate-1">
+                Created by <b><a href="https://github.com/jimmydin7/">Jim</a></b>
+            </p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="static\js\main.js"></script>
+</body>
+</html>
