@@ -32,7 +32,7 @@
     <div class="relative z-10">
         <header class="p-6 border-b border-gray-700">
             <div class="max-w-4xl mx-auto flex justify-between items-center">
-                <a href="index.html" class="text-3xl font-bold text-neon-green transform -rotate-2 hover:scale-105 transition-all">
+                <a href="/" class="text-3xl font-bold text-neon-green transform -rotate-2 hover:scale-105 transition-all">
                     📋 dropboard
                 </a>
                 <div class="flex space-x-4">
@@ -54,13 +54,14 @@
             </div>
 
             <div class="bg-white/5 backdrop-blur-sm border border-white/20 rounded-3xl p-8 transform rotate-1 shadow-lg">
-                <form class="space-y-6">
+                <form class="space-y-6" method="POST" action="/drop">
                     <div>
                         <label class="block text-xl font-bold text-neon-green mb-3 transform -rotate-1">
                             📝 Give it a title
                         </label>
                         <input 
                             type="text" 
+                            name="title"
                             placeholder="What's this about?"
                             class="w-full p-4 bg-white/10 backdrop-blur-sm border-2 border-neon-green/30 rounded-2xl text-lg text-white placeholder-gray-400 focus:border-neon-green focus:outline-none transform hover:scale-[1.02] transition-all"
                             maxlength="100"
@@ -73,6 +74,7 @@
                             💭 Tell us more
                         </label>
                         <textarea 
+                            name="content"
                             placeholder="Share your secret, confession, or what's really on your mind..."
                             rows="8"
                             class="w-full p-4 bg-white/10 backdrop-blur-sm border-2 border-neon-blue/30 rounded-2xl text-lg text-white placeholder-gray-400 focus:border-neon-blue focus:outline-none transform hover:scale-[1.02] transition-all resize-none"
@@ -92,6 +94,7 @@
                         </ul>
                     </div>
 
+                    <input type="hidden" name="country" value="Anonymous">
 
                     <div class="text-center pt-4">
                         <button 
