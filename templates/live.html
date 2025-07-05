@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Whiteboard & Chat - Dropboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Kalam', cursive; }
+        
+
+        .poll-option.voted {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .poll-option.voted:hover {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+        }
+        
+        .poll-option:not(.voted):hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: scale(1.02);
+        }
+    </style>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+</head>
+<body class="bg-gray-900 min-h-screen text-white">
+    <div class="max-w-4xl mx-auto py-8 px-4">
+        <h1 class="text-3xl font-bold text-neon-green mb-2">Live Whiteboard & Chat</h1>
+        <p class="mb-6 text-gray-300">This is a place to chat live with others about the post and express how you feel by drawing colored clouds on a liveboard everyone can see. Select a color and click to place a cloud. All changes are shared in real time!</p>
+        <div class="bg-white/5 border border-neon-green/30 rounded-2xl p-6 mb-8">
+            <h2 class="text-2xl font-bold text-neon-blue mb-2">{{ confession.title }}</h2>
+            <p class="text-gray-300 mb-2">{{ confession.content }}</p>
+            <span class="text-sm text-gray-400">{{ confession.country }} • {{ confession.created_at|humantime }}</span>
+        </div>
+
+
+        {% if confession.poll %}
+        <div class="bg-neon-cyan/10 border border-neon-cyan/30 rounded-2xl p-6 mb-8">
+            <h3 class="text-xl font-bold text-neon-cyan mb-4">📊 {{ confession.poll.question }}</h3>
+            <div id="poll-options" class="space-y-3">
+                {% for option in confession.poll.options %}
+                <div class="poll-option bg-white/5 border border-neon-cyan/20 rounded-xl p-4 hover:bg-white/10 transition-all cursor-pointer" data-index="{{ loop.index0 }}">
+                    <div class="flex justify-between items-center">
+                        <span class="text-white font-medium">{{ option.text }}</span>
+                        <span class="text-neon-cyan font-bold vote-count">{{ option.votes }} vote{% if option.votes != 1 %}s{% endif %}</span>
+                    </div>
+                    <div class="mt-2 bg-gray-700 rounded-full h-2">
+                        <div class="bg-neon-cyan h-2 rounded-full transition-all duration-300" style="width: {% if confession.poll.options|sum(attribute='votes') > 0 %}{{ (option.votes / confession.poll.options|sum(attribute='votes') * 100)|round(1) }}{% else %}0{% endif %}%"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <p class="text-sm text-gray-400 mt-3">Total votes: <span id="total-votes">{{ confession.poll.options|sum(attribute='votes') }}</span></p>
+        </div>
+        {% endif %}
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+            <div>
+                <h3 class="text-xl font-bold text-neon-purple mb-2">🎨 Whiteboard</h3>
+                <div class="flex space-x-2 mb-4">
+                    <button class="cloud-color w-8 h-8 rounded-full border-2 border-white" style="background:#00ff88" data-color="#00ff88"></button>
+                    <button class="cloud-color w-8 h-8 rounded-full border-2 border-white" style="background:#4ecdc4" data-color="#4ecdc4"></button>
+                    <button class="cloud-color w-8 h-8 rounded-full border-2 border-white" style="background:#ffe66d" data-color="#ffe66d"></button>
+                    <button class="cloud-color w-8 h-8 rounded-full border-2 border-white" style="background:#a8e6cf" data-color="#a8e6cf"></button>
+                    <button class="cloud-color w-8 h-8 rounded-full border-2 border-white" style="background:#ff8b94" data-color="#ff8b94"></button>
+                    <button class="cloud-color w-8 h-8 rounded-full border-2 border-white" style="background:#00d4ff" data-color="#00d4ff"></button>
+                </div>
+                <div class="flex justify-center mb-4">
+                    <button id="fullscreen-btn" class="px-6 py-2 bg-neon-blue hover:bg-neon-green text-gray-900 font-bold rounded-full shadow-lg">⛶ Full Screen</button>
+                </div>
+                <canvas id="whiteboard" class="bg-gray-800 rounded-xl w-full h-72" width="600" height="300" style="touch-action:none;"></canvas>
+            </div>
+
+            <div>
+                <h3 class="text-xl font-bold text-neon-blue mb-2">💬 Live Chat</h3>
+                <div id="chat-box" class="bg-gray-800 rounded-xl h-72 overflow-y-auto p-4 mb-2"></div>
+                <form id="chat-form" class="flex">
+                    <input type="text" id="chat-input" class="flex-1 p-2 rounded-l-lg bg-gray-700 text-white border border-neon-blue focus:outline-none" placeholder="Type your message..." maxlength="200" required>
+                    <button type="submit" class="bg-neon-blue hover:bg-neon-green text-gray-900 font-bold py-2 px-4 rounded-r-lg">Send</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+    const postId = "{{ confession.id }}";
+    const socket = io();
+    socket.emit('join', { post_id: postId });
+
+    const whiteboard = document.getElementById('whiteboard');
+    const ctx = whiteboard.getContext('2d');
+    let selectedColor = '#00ff88';
+    let lines = [];
+    let drawing = false;
+    let lastX = null, lastY = null;
+    function drawLine(x1, y1, x2, y2, color) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(x1 * whiteboard.width, y1 * whiteboard.height);
+        ctx.lineTo(x2 * whiteboard.width, y2 * whiteboard.height);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+        ctx.globalAlpha = 0.85;
+        ctx.shadowColor = color + '88';
+        ctx.shadowBlur = 4;
+        ctx.stroke();
+        ctx.globalAlpha = 1.0;
+        ctx.restore();
+    }
+    function drawLines() {
+        ctx.clearRect(0, 0, whiteboard.width, whiteboard.height);
+        for (const l of lines) {
+            drawLine(l.x1, l.y1, l.x2, l.y2, l.color);
+        }
+    }
+    document.querySelectorAll('.cloud-color').forEach(btn => {
+        btn.addEventListener('click', () => {
+            selectedColor = btn.getAttribute('data-color');
+            document.querySelectorAll('.cloud-color').forEach(b => b.classList.remove('ring-4', 'ring-white'));
+            btn.classList.add('ring-4', 'ring-white');
+        });
+    });
+    document.querySelector('.cloud-color').classList.add('ring-4', 'ring-white');
+    whiteboard.addEventListener('mousedown', e => {
+        drawing = true;
+        const rect = whiteboard.getBoundingClientRect();
+        lastX = (e.clientX - rect.left) / rect.width;
+        lastY = (e.clientY - rect.top) / rect.height;
+    });
+    whiteboard.addEventListener('mousemove', e => {
+        if (!drawing) return;
+        const rect = whiteboard.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width;
+        const y = (e.clientY - rect.top) / rect.height;
+        drawLine(lastX, lastY, x, y, selectedColor);
+        socket.emit('draw_line', { post_id: postId, x1: lastX, y1: lastY, x2: x, y2: y, color: selectedColor });
+        lastX = x;
+        lastY = y;
+    });
+    whiteboard.addEventListener('mouseup', () => { drawing = false; });
+    whiteboard.addEventListener('mouseleave', () => { drawing = false; });
+    socket.on('draw_line', line => {
+        lines.push(line);
+        drawLine(line.x1, line.y1, line.x2, line.y2, line.color);
+    });
+    socket.on('init_lines', data => {
+        lines = data.lines || [];
+        drawLines();
+    });
+    window.addEventListener('resize', drawLines);
+
+    const chatBox = document.getElementById('chat-box');
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+
+    function getRandomColor() {
+        const palette = [
+            '#00ff88', '#4ecdc4', '#ffe66d', '#a8e6cf', '#ff8b94', '#00d4ff',
+            '#ffb347', '#b19cd9', '#ff6961', '#77dd77', '#f49ac2', '#aec6cf'
+        ];
+        return palette[Math.floor(Math.random() * palette.length)];
+    }
+    let userColor = localStorage.getItem('chat_user_color');
+    if (!userColor) {
+        userColor = getRandomColor();
+        localStorage.setItem('chat_user_color', userColor);
+    }
+    function addMessage(msg) {
+        const div = document.createElement('div');
+        div.className = 'mb-2';
+        div.innerHTML = `<span>${msg.text}</span> <span class='text-xs text-gray-400'>${msg.time ? new Date(msg.time).toLocaleTimeString() : ''}</span>`;
+        chatBox.appendChild(div);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+    chatForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const text = chatInput.value.trim();
+        if (!text) return;
+        socket.emit('chat_message', { post_id: postId, text, color: userColor });
+        addMessage({ text, time: Date.now(), color: userColor }); // Show own message instantly
+        chatInput.value = '';
+    });
+    socket.on('chat_message', msg => {
+        addMessage(msg);
+    });
+    socket.on('init_messages', data => {
+        chatBox.innerHTML = '';
+        (data.messages || []).forEach(addMessage);
+    });
+
+
+    const votedOption = localStorage.getItem(`poll_vote_${postId}`);
+    let hasVoted = votedOption !== null;
+    
+    if (hasVoted) {
+        disableAllPollOptions();
+        highlightVotedOption(parseInt(votedOption));
+    }
+    
+    document.querySelectorAll('.poll-option').forEach(option => {
+        option.addEventListener('click', function() {
+            if (hasVoted) return;
+            
+            const optionIndex = parseInt(this.getAttribute('data-index'));
+            
+            localStorage.setItem(`poll_vote_${postId}`, optionIndex.toString());
+            hasVoted = true;
+            disableAllPollOptions();
+            highlightVotedOption(optionIndex);
+            
+            socket.emit('poll_vote', { post_id: postId, option_index: optionIndex });
+        });
+    });
+
+    function disableAllPollOptions() {
+        document.querySelectorAll('.poll-option').forEach(option => {
+            option.style.opacity = '0.6';
+            option.style.cursor = 'not-allowed';
+            option.classList.add('voted');
+            option.onclick = null;
+        });
+    }
+
+    function highlightVotedOption(optionIndex) {
+        const votedElement = document.querySelector(`[data-index="${optionIndex}"]`);
+        if (votedElement) {
+            votedElement.style.borderColor = '#00ff88';
+            votedElement.style.backgroundColor = 'rgba(0, 255, 136, 0.1)';
+            votedElement.innerHTML += '<div class="text-neon-green text-sm mt-2">✓ You voted for this</div>';
+        }
+    }
+
+
+    socket.on('poll_update', data => {
+        if (data.post_id === postId && data.poll) {
+            updatePollDisplay(data.poll);
+        }
+    });
+
+    function updatePollDisplay(poll) {
+        const totalVotes = poll.options.reduce((sum, option) => sum + option.votes, 0);
+        document.getElementById('total-votes').textContent = totalVotes;
+        
+        poll.options.forEach((option, index) => {
+            const optionElement = document.querySelector(`[data-index="${index}"]`);
+            if (optionElement) {
+                const voteCount = optionElement.querySelector('.vote-count');
+                const progressBar = optionElement.querySelector('.bg-neon-cyan');
+                
+                voteCount.textContent = `${option.votes} vote${option.votes !== 1 ? 's' : ''}`;
+                
+                const percentage = totalVotes > 0 ? (option.votes / totalVotes * 100) : 0;
+                progressBar.style.width = `${percentage}%`;
+            }
+        });
+    }
+    </script>
+</body>
+</html> 

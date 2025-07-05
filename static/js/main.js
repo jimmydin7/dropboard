@@ -15,3 +15,48 @@ particlesJS('particles-js', {
             },
             retina_detect: true
         });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const pollToggle = document.getElementById('poll-toggle');
+    const pollSection = document.getElementById('poll-section');
+    const addOptionBtn = document.getElementById('add-option');
+    const optionsContainer = document.getElementById('poll-options');
+    
+    if (pollToggle) {
+        pollToggle.addEventListener('change', function() {
+            if (this.checked) {
+                pollSection.classList.remove('hidden');
+            } else {
+                pollSection.classList.add('hidden');
+            }
+        });
+    }
+    
+    if (addOptionBtn) {
+        addOptionBtn.addEventListener('click', function() {
+            const optionCount = optionsContainer.children.length;
+            if (optionCount >= 6) return;
+            
+            const optionDiv = document.createElement('div');
+            optionDiv.className = 'flex items-center space-x-2 mb-2';
+            optionDiv.innerHTML = `
+                <input type="text" name="poll_options[]" placeholder="Option ${optionCount + 1}" 
+                       class="flex-1 bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white" required>
+                <button type="button" class="remove-option text-red-400 hover:text-red-300">×</button>
+            `;
+            
+            optionsContainer.appendChild(optionDiv);
+            
+            optionDiv.querySelector('.remove-option').addEventListener('click', function() {
+                optionDiv.remove();
+            });
+        });
+    }
+    
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-option')) {
+            e.target.parentElement.remove();
+        }
+    });
+});
+

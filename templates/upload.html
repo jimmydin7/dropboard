@@ -84,6 +84,74 @@
                             <span class="text-neon-purple font-bold">✨ Don't worry:</span> Our filters keep things respectful while protecting your anonymity
                         </p>
                     </div>
+
+                    <!-- Poll Creation Section -->
+                    <div class="bg-neon-cyan/10 border-2 border-neon-cyan/30 rounded-2xl p-6 transform rotate-1">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-neon-cyan">📊 Add a Poll (Optional)</h3>
+                            <button type="button" id="toggle-poll" class="text-neon-cyan hover:text-cyan-300 font-bold">
+                                Show Poll Options
+                            </button>
+                        </div>
+                        <div id="poll-section" class="hidden space-y-4">
+                            <div>
+                                <label class="block text-lg font-bold text-neon-cyan mb-2">
+                                    ❓ Poll Question
+                                </label>
+                                <input 
+                                    type="text" 
+                                    name="poll_question"
+                                    placeholder="What should I do? What do you think?"
+                                    class="w-full p-3 bg-white/10 backdrop-blur-sm border-2 border-neon-cyan/30 rounded-xl text-white placeholder-gray-400 focus:border-neon-cyan focus:outline-none"
+                                    maxlength="100"
+                                >
+                            </div>
+                            <div>
+                                <label class="block text-lg font-bold text-neon-cyan mb-2">
+                                    📝 Poll Options (2-5 options)
+                                </label>
+                                <div class="space-y-2">
+                                    <input 
+                                        type="text" 
+                                        name="poll_option_1"
+                                        placeholder="Option 1"
+                                        class="w-full p-3 bg-white/10 backdrop-blur-sm border-2 border-neon-cyan/30 rounded-xl text-white placeholder-gray-400 focus:border-neon-cyan focus:outline-none"
+                                        maxlength="50"
+                                    >
+                                    <input 
+                                        type="text" 
+                                        name="poll_option_2"
+                                        placeholder="Option 2"
+                                        class="w-full p-3 bg-white/10 backdrop-blur-sm border-2 border-neon-cyan/30 rounded-xl text-white placeholder-gray-400 focus:border-neon-cyan focus:outline-none"
+                                        maxlength="50"
+                                    >
+                                    <input 
+                                        type="text" 
+                                        name="poll_option_3"
+                                        placeholder="Option 3 (optional)"
+                                        class="w-full p-3 bg-white/10 backdrop-blur-sm border-2 border-neon-cyan/30 rounded-xl text-white placeholder-gray-400 focus:border-neon-cyan focus:outline-none"
+                                        maxlength="50"
+                                    >
+                                    <input 
+                                        type="text" 
+                                        name="poll_option_4"
+                                        placeholder="Option 4 (optional)"
+                                        class="w-full p-3 bg-white/10 backdrop-blur-sm border-2 border-neon-cyan/30 rounded-xl text-white placeholder-gray-400 focus:border-neon-cyan focus:outline-none"
+                                        maxlength="50"
+                                    >
+                                    <input 
+                                        type="text" 
+                                        name="poll_option_5"
+                                        placeholder="Option 5 (optional)"
+                                        class="w-full p-3 bg-white/10 backdrop-blur-sm border-2 border-neon-cyan/30 rounded-xl text-white placeholder-gray-400 focus:border-neon-cyan focus:outline-none"
+                                        maxlength="50"
+                                    >
+                                </div>
+                                <p class="text-sm text-gray-400 mt-2">Leave poll fields empty if you don't want to add a poll</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="bg-neon-yellow/10 border-2 border-neon-yellow/30 rounded-2xl p-6 transform -rotate-1">
                         <h3 class="text-lg font-bold text-neon-yellow mb-3">🌟 Quick Guidelines</h3>
                         <ul class="space-y-2 text-gray-300">
@@ -127,5 +195,20 @@
 
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script src="static\js\main.js"></script>
+    <script>
+        // Poll toggle functionality
+        document.getElementById('toggle-poll').addEventListener('click', function() {
+            const pollSection = document.getElementById('poll-section');
+            const toggleBtn = document.getElementById('toggle-poll');
+            
+            if (pollSection.classList.contains('hidden')) {
+                pollSection.classList.remove('hidden');
+                toggleBtn.textContent = 'Hide Poll Options';
+            } else {
+                pollSection.classList.add('hidden');
+                toggleBtn.textContent = 'Show Poll Options';
+            }
+        });
+    </script>
 </body>
 </html>
