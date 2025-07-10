@@ -6,25 +6,25 @@ A real-time social media web app designed for teenagers to anonymously share con
 
 ## ✨ Features
 
-### 🔐 **100% Anonymous**
+### **100% Anonymous**
 - No accounts, no emails, no tracking
 - Pure anonymous sharing with content moderation
 - Safe space for teens to express themselves
 
-### 💬 **Real-Time Interactive Features**
+### **Real-Time Interactive Features**
 - **Live Chat**: Real-time messaging with colored usernames
 - **Collaborative Whiteboard**: Draw colored clouds together in real-time
 - **Live Polls**: Create and vote on polls with instant results
 - **WebSocket Integration**: All interactions happen instantly across all connected users
 
-### 🎯 **Core Functionality**
+### **Core Functionality**
 - **Anonymous Posts**: Share confessions with titles and content
 - **Upvoting System**: Support posts that resonate with you
 - **Comment System**: Provide anonymous support and advice
 - **Content Moderation**: Automatic filtering for inappropriate content
 - **Country-Based Sharing**: See where posts are coming from
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Backend**: Python Flask with Flask-SocketIO
 - **Frontend**: HTML5, TailwindCSS, JavaScript
@@ -33,7 +33,7 @@ A real-time social media web app designed for teenagers to anonymously share con
 - **Styling**: Custom neon color palette with handwriting fonts
 - **Deployment**: Ready for cloud deployment
 
-## 🚀 Real-Time Features
+## Real-Time Features
 
 ### Live Whiteboard
 - Collaborative drawing with 6 neon colors
@@ -53,21 +53,12 @@ A real-time social media web app designed for teenagers to anonymously share con
 - Progress bars showing vote distribution
 - One vote per user per poll
 
-## 📱 How It Works
+## How It Works
 
 1. **Write**: Share your secret with a title and context
 2. **Stay Safe**: Our filters keep things respectful
 3. **Get Support**: Others can comment and upvote anonymously
 4. **Connect**: Join live sessions to chat and draw together
-
-## 🎨 Design Philosophy
-
-Built with teens in mind, featuring:
-- **Neon Color Palette**: Vibrant, energetic colors
-- **Handwriting Fonts**: Personal, approachable feel
-- **Responsive Design**: Works on all devices
-- **Particle Effects**: Engaging visual experience
-- **Rotated Elements**: Playful, dynamic layout
 
 ## 🔧 Setup & Installation
 
@@ -92,7 +83,7 @@ Built with teens in mind, featuring:
    python main.py
    ```
 
-## 🌟 HackClub Project #hackmate
+## HackClub Project #hackmate
 
 This project was created as part of the HackClub #hackmate **ysws**, demonstrating:
 - **Real-time web development** with WebSockets
@@ -101,7 +92,7 @@ This project was created as part of the HackClub #hackmate **ysws**, demonstrati
 - **Full-stack development** with Python and JavaScript
 - **Database integration** with Firebase
 
-## 🤝 Contributing
+## Contributing
 
 This is a HackClub project! Feel free to:
 - Add new real-time features
@@ -109,7 +100,7 @@ This is a HackClub project! Feel free to:
 - Enhance content moderation
 - Add new interactive elements
 
-## 📄 License
+## License
 
 Created for educational purposes and the HackClub community.
 
